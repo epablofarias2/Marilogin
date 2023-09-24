@@ -20,13 +20,13 @@ def requisitos_contraseña(contraseña):
     else:
         return True
 
-def enviar_datos(username, password, pregunta_seguridad):
+def enviar_datos(username, password, pregunta_seguridad, codigo_verificacion):
     """ 
     Envía los datos del usuario a la base de datos
     """ 
     conexion = sqlite3.connect('proyecto_testing/data/usuarios.db')
     cursor = conexion.cursor()
-    cursor.execute("INSERT INTO mi_tabla (username, password, pregunta_seguridad) VALUES (?, ?, ?)", (username, password, pregunta_seguridad))
+    cursor.execute("INSERT INTO mi_tabla (username, password, pregunta_seguridad, codigo_verificacion) VALUES (?, ?, ?, ?)", (username, password, pregunta_seguridad, codigo_verificacion))
     conexion.commit()
     conexion.close()
 

@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 from utils import util1
+from utils import util2
 
 app = Flask(__name__)
+
+app.secret_key = 'fran1234'
 
 # Rutas de la aplicación
 @app.route('/')
@@ -16,6 +19,10 @@ def registrarse():
 @app.route('/cambiar_contraseña')
 def cambiar_contraseña():
     return render_template('cambiar_contraseña.html')
+
+@app.route('/verificar_correo')
+def verificar_correo():
+    return render_template('verificar_correo.html')
 
 @app.route('/home')
 def home():
@@ -38,9 +45,23 @@ def registrarse_post():
     if util1.verificar_usuario(username):
         return render_template('registrarse.html', error='El usuario ya existe')
     
-    util1.enviar_datos(username, password, pregunta_seguridad)
-    return redirect(url_for('index')) 
+    codigo = util2.generar_codigo()
+    session['codigo'] = codigo
+    util2.verificar_correo(username, codigo)
+    util1.enviar_datos(username, password, pregunta_seguridad, codigo)
+    return redirect(url_for('verificar_correo'))
 
+# Verificamos si el código de verificación es correcto
+@app.route("/verificar_correo", methods=['POST'])
+def verificar_correo_post():
+    codigo_original = session.get('codigo')
+    codigo_ingresado = request.form['codigo']
+
+    if codigo_original == codigo_ingresado:
+        return redirect(url_for('index'))
+    else:
+        return render_template('verificar_correo.html', error='El código es incorrecto')
+    
 #Vereficamos el inicio de sesion
 @app.route("/iniciar_sesion", methods=['POST'])
 def iniciar_sesion_post():
@@ -79,6 +100,7 @@ CREATE TABLE IF NOT EXISTS mi_tabla (
     username TEXT,
     password TEXT,
     pregunta_seguridad TEXT
+    codigo_verificacion NUMERIC
 )
 '''
 

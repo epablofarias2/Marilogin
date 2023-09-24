@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>verificar correo</title>
+</head>
+<body>
+    <h1>Verificar correo</h1>
+    <form action="/verificar_correo" method="POST">
+        <label for="username">Usuario:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="codigo">Codigo</label>
+        <input type="text" id="codigo" name="codigo" required><br><br>
+
+        {% if error %}
+        <p style="color: red;">{{ error }}</p>
+        {% endif %}
+
+        <input type="submit" value="Verificar"><br><br>
+    </form>
+</body>
+</html>
