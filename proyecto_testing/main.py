@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 from utils import util1
 from utils import util2
+from utils import util3
 
 app = Flask(__name__)
 
@@ -27,6 +28,10 @@ def verificar_correo():
 @app.route('/home')
 def home():
     return render_template('home.html')
+
+@app.route('/mostrar_productos')
+def mostrar_productos():
+    return render_template('mostrar_productos.html')
 
 #Traemos los datos dle usuario, los comprobamos y los enviamos a la base de datos
 @app.route('/registrarse', methods=['POST'])
@@ -67,7 +72,7 @@ def verificar_correo_post():
 def iniciar_sesion_post():
     username = request.form['username']
     password = request.form['password']
-
+    session ['username'] = username
     if not util1.verificar_usuario(username):
         return render_template('index.html', error='El usuario no existe')
     elif not util1.verificar_contraseña(username, password):
@@ -88,12 +93,28 @@ def pregunta_seguridad_post():
     else:
         return render_template('cambiar_contraseña.html', error='La respuesta de seguridad es incorrecta')
 
+#Obetenemos los datos del form y los mandamos a la base de datos
+@app.route("/home", methods=['POST'])
+def home_post():
+    username = session.get('username')
+    codigo = request.form['codigo']
+    nombre = request.form['elemento']
+    descripcion = request.form['descripcion']
+
+    util3.crear_tabla()
+    util3.agregar_producto(username, codigo, nombre, descripcion)
+    return redirect(url_for('home'))
+
+#Mostramos los productos del usuario
+@app.route('/mostrar_productos/<username>')
+def mostrar_productos_usuario(username):
+    productos = util3.mostrar_productos(username) 
+    return render_template('mostrar_productos.html', productos=productos)
 
 # Conectarse a la base de datos (si no existe, se crea)
 conexion = sqlite3.connect('proyecto_testing\\data\\usuarios.db')
 cursor = conexion.cursor()
 
-# Define la sentencia SQL para crear la tabla
 tabla_sql = '''
 CREATE TABLE IF NOT EXISTS mi_tabla (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,10 +125,8 @@ CREATE TABLE IF NOT EXISTS mi_tabla (
 )
 '''
 
-# Ejecutar la sentencia SQL para crear la tabla
 cursor.execute(tabla_sql)
 
-# Guardar los cambios y cerrar la conexión a la base de datos
 conexion.commit()
 conexion.close()
 
