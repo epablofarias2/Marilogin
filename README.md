@@ -26,7 +26,7 @@ El objetivo de este proyecto es proporcionar a los alumnos una herramienta para 
 
 **Cómo utilizar:**
 
-- Pueden encontrar la documentacion en el proximo link: https://documentacion-testing.netlify.app/como%20utilizar%20el%20programa%20833cf15b63b44bb9b79296d51e560ad9/windows%20d4d3acfd1e944c2d9243370e02f8b8ea
+- Pueden encontrar la documentacion en el proximo link: https://documentacion-testing.netlify.app/
 
 **Contacto:**
 
